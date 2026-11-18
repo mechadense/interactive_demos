@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interactive check of the example productive nanosystem in Drexler’s Nanosystems (Table 14.1): does every level pass on the ~1 g/s the level below delivers? With charts, formulas, and three oddities found.">
+<meta name="author" content="Lukas M. Süss (mechadense)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Is Nanosystems’ example productive nanosystem (Table 14.1) continuity-consistent in throughput?">
+<meta property="og:description" content="Interactive check of the example productive nanosystem in Drexler’s Nanosystems (Table 14.1): does every level pass on the ~1 g/s the level below delivers? With charts, formulas, and three oddities found.">
+<meta property="og:url" content="https://mechadense.github.io/interactive_demos/nanosystems-table-14-1/">
+<meta name="twitter:card" content="summary">
 <title>Is Nanosystems’ example productive nanosystem (Table 14.1) continuity-consistent in throughput?</title>
 <style>
 .viz-root{
@@ -73,6 +80,16 @@ details.more.intro{margin-bottom:12px}
 .eq .u{color:var(--text-2);margin-left:18px;white-space:nowrap}
 .fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:12.5px;line-height:1.15}
 .fr>span:first-child{border-bottom:1px solid currentColor;padding:0 2px}
+.chip{border-radius:5px;padding:1px 5px;display:inline-block;line-height:1.35}
+.chip.b1{background:color-mix(in srgb,var(--b1) 55%,transparent)}
+.chip.b2{background:color-mix(in srgb,var(--b2) 45%,transparent)}
+.chip.b3{background:color-mix(in srgb,var(--b3) 40%,transparent)}
+.chip.g2{background:color-mix(in srgb,var(--g2) 45%,transparent)}
+.chip.o2{background:color-mix(in srgb,var(--o2) 45%,transparent)}
+.chip.net{outline:1.5px solid var(--text);outline-offset:-1.5px}
+.eq .u .chip{color:var(--text)}
+figure.orig{margin:10px 0}figure.orig img{max-width:100%;height:auto;border:1px solid var(--grid);border-radius:6px;background:#fff}
+figure.orig figcaption{font-size:12px;color:var(--text-2);margin-top:4px}
 details.sec{margin-top:22px}
 details.sec>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px}
 details.sec>summary::-webkit-details-marker{display:none}
@@ -125,8 +142,8 @@ details.sec>summary h2{margin:0;display:inline}
   </div>
 
   <h2>Continuity-of-throughput analysis</h2>
-<div class="eq"><span class="lbl">Product</span> V̇ = sets × ups × f × <span class="fr"><span>1</span><span>inputs</span></span><sup>*</sup> × s³<span class="u">[ <span class="fr"><span>nm³</span><span>s</span></span> ] = [ sets ] × <span class="fr"><span>units</span><span>set</span></span> × <span class="fr"><span>operations</span><span>unit · s</span></span> × <span class="fr"><span>products</span><span>operation</span></span> × <span class="fr"><span>nm³</span><span>product</span></span></span></div>
-<div class="eq"><span class="lbl">Log</span> log(V̇ / (nm³/s)) = log sets + log ups + log(f / Hz) − log inputs<sup>*</sup> + log(s³ / nm³)</div>
+<div class="eq"><span class="lbl">Product</span> <span class="chip net">V̇</span> = <span class="chip b1">sets</span> × <span class="chip b2">ups</span> × <span class="chip b3">f</span> × <span class="chip g2"><span class="fr"><span>1</span><span>inputs</span></span><sup>*</sup></span> × <span class="chip o2">s³</span><span class="u"><span class="chip net">[ <span class="fr"><span>nm³</span><span>s</span></span> ]</span> = <span class="chip b1">[ sets ]</span> × <span class="chip b2"><span class="fr"><span>units</span><span>set</span></span></span> × <span class="chip b3"><span class="fr"><span>operations</span><span>unit · s</span></span></span> × <span class="chip g2"><span class="fr"><span>products</span><span>operation</span></span></span> × <span class="chip o2"><span class="fr"><span>nm³</span><span>product</span></span></span></span></div>
+<div class="eq"><span class="lbl">Log</span> <span class="chip net">log(V̇ / (nm³/s))</span> = <span class="chip b1">log sets</span> + <span class="chip b2">log ups</span> + <span class="chip b3">log(f / Hz)</span> − <span class="chip g2">log inputs<sup>*</sup></span> + <span class="chip o2">log(s³ / nm³)</span></div>
 <p class="note" style="margin:2px 0 8px"><sup>*</sup> products per operation: 1 for mills (one product finished, assumed), 1 / inputs for manipulators (one input placed). Mass flow ṁ = ρ · V̇ with ρ = 1000 kg/m³ = 10⁻²⁴ kg/nm³ (§14.4.3), so 10²¹ nm³/s = 1 g/s. Each log takes the quantity divided by its unit, so the sum is a pure number.</p>
   <p class="sub">Multiplication becomes stacking in log₁₀. A log needs a unitless argument, so quantities with units are divided by their unit (Hz, nm³); the units multiply the same way, Hz · nm³ = nm³/s. Segments above 0 multiply, below 0 divide. ◆ = net log₁₀ volume flow [nm³/s]; ▸ = subtotal log₁₀ cycles/s. Dashed line at 21 = 10²¹ nm³/s = 1 cm³/s = 1 g/s at 1000 kg/m³: a continuous chain gives a flat line of ◆ there. Pre-stages: log s³ is replaced by log of the volume per input chosen in Oddity 2 (not a table value). Follows the mode buttons and the switches in the oddity cards.</p>
   <div id="stackWrap" style="position:relative"><svg id="stack" viewBox="0 0 1160 498" role="img" aria-label="Stacked log contributions to volume flow per level"></svg><div id="tip2" class="tipc"></div></div>
@@ -180,6 +197,10 @@ details.sec>summary h2{margin:0;display:inline}
       </details>
     </section>
   </div>
+
+  <h2>Original Table 14.1 from the book</h2>
+  <figure class="orig"><img src="table-14-1.png" alt="Table 14.1, Manufacturing system parameters, from Nanosystems (Drexler 1992), with footnotes a–i" loading="lazy">
+    <figcaption>K. Eric Drexler, <i>Nanosystems: Molecular Machinery, Manufacturing, and Computation</i> (Wiley, 1992), Table 14.1, p. 422. Reproduced for discussion.</figcaption></figure>
 
   <h2>How the quantities depend on each other</h2>
   <p class="sub">Light boxes = table columns, darker = derived. Color family follows the chain: rate (blue), size (orange), continuity (green).</p>
@@ -617,14 +638,14 @@ function drawFlow(P){
   g.forEach((v,i)=>{
     const off=v>3*gm||v<gm/3;
     const h=Math.max(fh*v/top,0);
-    el("rect",{x:fx(i)-bw/2,y:yy(0)-h,width:bw,height:h,rx:4,fill:off?"var(--bad)":"var(--s1)"},fs);
+    el("rect",{x:fx(i)-bw/2,y:yy(0)-h,width:bw,height:h,rx:4,fill:off?"var(--bad)":"var(--text)"},fs);
     const lab=el("text",{x:fx(i),y:yy(0)-h-6,"text-anchor":"middle",fill:off?"var(--bad)":"var(--text)","font-size":12,"font-weight":off?600:400},fs);
     lab.textContent=fmt(+v.toPrecision(2));
     xlab(fs,fx(i),FH-fm.b+16,i);
   });
 }
 document.querySelectorAll(".viz-root > h2").forEach(h=>{
-  const d=document.createElement("details");d.className="sec";d.open=/^(Continuity-of-throughput|Mass flow per level|Three oddities)/.test(h.textContent);
+  const d=document.createElement("details");d.className="sec";d.open=/^(How the quantities|Continuity-of-throughput|Mass flow per level|Three oddities)/.test(h.textContent);
   const sm=document.createElement("summary");h.parentNode.insertBefore(d,h);sm.appendChild(h);d.appendChild(sm);
   while(d.nextSibling&&!(d.nextSibling.nodeType===1&&d.nextSibling.tagName==="H2"))d.appendChild(d.nextSibling);
   d.addEventListener("toggle",()=>{if(d.open)draw();});
