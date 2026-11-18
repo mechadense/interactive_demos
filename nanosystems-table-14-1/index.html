@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nanosystems Table 14.1 – throughput chain explorer</title>
+<title>Is Nanosystems’ example productive nanosystem (Table 14.1) continuity-consistent in throughput?</title>
 <style>
 .viz-root{
   color-scheme:light;
@@ -61,6 +61,13 @@ details{margin-top:14px}
 summary{cursor:pointer;color:var(--text-2)}
 .rbtn{font:inherit;font-size:13px;background:var(--surface-2);color:var(--text);border:1px solid var(--grid);border-radius:8px;padding:6px 12px;cursor:pointer}
 h2{font-size:15px;margin:26px 0 2px}
+.back{margin:0 0 6px;font-size:13px}.back a{color:var(--text-2);text-decoration:none}
+.lead{font-size:15px;max-width:900px;margin:8px 0 8px}
+.wip{font-size:12.5px;color:var(--text-2);background:var(--surface-2);border:1px solid var(--grid);border-radius:8px;padding:6px 10px;max-width:900px;margin:0 0 10px}
+details.more{margin:6px 0}details.more>summary{cursor:pointer;color:var(--text-2);font-size:13px}
+details.more.intro{margin-bottom:12px}
+.card .one{font-weight:500}
+.card .eq .u{white-space:normal;display:block;margin-left:0}
 .eq{font-size:14px;margin:8px 0;line-height:2.1}
 .eq .lbl{display:inline-block;min-width:92px;font-size:12px;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
 .eq .u{color:var(--text-2);margin-left:18px;white-space:nowrap}
@@ -94,19 +101,22 @@ details.sec>summary h2{margin:0;display:inline}
 </head>
 <body>
 <div class="viz-root">
-  <h1>Nanosystems Table 14.1 – throughput chain explorer</h1>
+  <p class="back"><a href="../">← all demos</a></p>
+  <h1>Is Nanosystems’ example productive nanosystem (Table 14.1) continuity-consistent in throughput?</h1>
   <p class="sub" style="margin-bottom:4px">Vibe coded by Lukas M. Süss (aka <a href="https://github.com/mechadense">mechadense</a>) using Anthropic Claude Opus 5.5 (high) – 2026-11-18</p>
   <p class="sub">Source: K. Eric Drexler, <i>Nanosystems: Molecular Machinery, Manufacturing, and Computation</i> (Wiley, 1992), Chapter 14, Section 14.4 “An exemplar manufacturing-system architecture”, Table 14.1.
   <a href="https://nanosyste.ms/molecular_manufacturing_systems#14.4.%20An%20exemplar%20manufacturing-system%20architecture">Read the section online (nanosyste.ms)</a> · <a href="https://apm.bplaced.net/w/index.php?title=Nanosystems">Coverage of the book on the APMnT wiki</a></p>
-  <div class="intro">
+  <p class="lead">Chapter 14 of <i>Nanosystems</i> sizes an example productive nanosystem: small feedstock molecules are built up, level by level, into ≈ 1 kg products at ≈ 1 g/s. This page follows that flow through Table 14.1 and checks that each level passes on what the level below delivers.</p>
+  <p class="wip">Work in progress: not yet fully checked by hand. Numbers are from Table 14.1 and the cited sections; mistakes are possible. Corrections welcome – <a href="https://github.com/mechadense/interactive_demos/issues">open an issue on GitHub</a>.</p>
+  <details class="more intro"><summary><b>More about the system</b></summary>
     <p><b>What this is about.</b> Chapter 14 of <i>Nanosystems</i> sketches how a desktop-scale molecular manufacturing system could turn a small-molecule feedstock into macroscopic products with atomic precision. Drexler presents it as an exemplar to check the numbers, not as a proposed design. Material flows upward through a series of levels, each building larger parts from many smaller ones (convergent assembly):</p>
     <ul>
       <li><b>Pre-stages</b> – input ordering and reagent preparation take feedstock molecules and bind them to carriers and tool tips.</li>
       <li><b>Mill stages 1–5</b> – many simple, fixed-path mechanisms (like factory production lines) build blocks from about 1 nm up to about 1 µm.</li>
       <li><b>Manipulator stages 1–3</b> – robot arms put blocks together into parts of 100 µm, 5 mm and finally about 0.1 m.</li>
     </ul>
-    <p>The system is sized to turn a feedstock solution into ≈ 1 kg products of ≈ 0.2 m in a cycle time of about an hour (§14.4.1). Table 14.1 gives the number of machines, their speed and size per level, chosen to give about 1 g/s overall. This page checks whether those numbers carry the same flow of material from level to level, and explains the two places where they seem not to.</p>
-  </div>
+    <p>The system is sized to turn a feedstock solution into ≈ 1 kg products of ≈ 0.2 m in a cycle time of about an hour (§14.4.1). Table 14.1 gives the number of machines, their speed and size per level, chosen to give about 1 g/s overall. This page checks whether those numbers carry the same flow of material from level to level, and explains the three places where they seem not to.</p>
+  </details>
 
   <div class="modes" role="group" aria-label="Operating mode">
     <button id="resetN" class="mode active"><b>Operating value (§14.3.3)</b><span>stage 1–3 mills at 10⁴ Hz per unit · continuous chain</span></button>
@@ -114,12 +124,28 @@ details.sec>summary h2{margin:0;display:inline}
     <span class="mnote">Either button also resets all other switches and toggles.</span>
   </div>
 
+  <h2>Continuity-of-throughput analysis</h2>
+<div class="eq"><span class="lbl">Product</span> V̇ = sets × ups × f × <span class="fr"><span>1</span><span>inputs</span></span><sup>*</sup> × s³<span class="u">[ <span class="fr"><span>nm³</span><span>s</span></span> ] = [ sets ] × <span class="fr"><span>units</span><span>set</span></span> × <span class="fr"><span>operations</span><span>unit · s</span></span> × <span class="fr"><span>products</span><span>operation</span></span> × <span class="fr"><span>nm³</span><span>product</span></span></span></div>
+<div class="eq"><span class="lbl">Log</span> log(V̇ / (nm³/s)) = log sets + log ups + log(f / Hz) − log inputs<sup>*</sup> + log(s³ / nm³)</div>
+<p class="note" style="margin:2px 0 8px"><sup>*</sup> products per operation: 1 for mills (one product finished, assumed), 1 / inputs for manipulators (one input placed). Mass flow ṁ = ρ · V̇ with ρ = 1000 kg/m³ = 10⁻²⁴ kg/nm³ (§14.4.3), so 10²¹ nm³/s = 1 g/s. Each log takes the quantity divided by its unit, so the sum is a pure number.</p>
+  <p class="sub">Multiplication becomes stacking in log₁₀. A log needs a unitless argument, so quantities with units are divided by their unit (Hz, nm³); the units multiply the same way, Hz · nm³ = nm³/s. Segments above 0 multiply, below 0 divide. ◆ = net log₁₀ volume flow [nm³/s]; ▸ = subtotal log₁₀ cycles/s. Dashed line at 21 = 10²¹ nm³/s = 1 cm³/s = 1 g/s at 1000 kg/m³: a continuous chain gives a flat line of ◆ there. Pre-stages: log s³ is replaced by log of the volume per input chosen in Oddity 2 (not a table value). Follows the mode buttons and the switches in the oddity cards.</p>
+  <div id="stackWrap" style="position:relative"><svg id="stack" viewBox="0 0 1160 498" role="img" aria-label="Stacked log contributions to volume flow per level"></svg><div id="tip2" class="tipc"></div></div>
+
+  <h2>Mass flow per level (linear)</h2>
+  <p class="sub">Products/s × (product scale)³ × 1000 kg/m³, the handling density §14.4.3 uses for its 0.001 kg/s. Pre-stages: volume per input as chosen in Oddity 2 (not a table value). Dashed line: the ~1 g/s design throughput of footnote a.</p>
+  <div class="eq"><span class="lbl">Mass flow</span> ṁ = ρ · V̇<span class="u"><span class="fr"><span>g</span><span>s</span></span> = <span class="fr"><span>g</span><span>nm³</span></span> × <span class="fr"><span>nm³</span><span>s</span></span></span><span class="u" style="color:var(--muted)">ρ = 1000 kg/m³ = 10⁻²¹ g/nm³, so 10²¹ nm³/s = 1 g/s</span></div>
+  <div id="flowWrap" style="position:relative"><svg id="flow" viewBox="0 0 1160 358" role="img" aria-label="Linear bar chart of mass flow per level"></svg></div>
+
+
+  <h2>Three oddities found</h2>
   <div class="cards">
     <section class="card">
       <h3><span class="tag">Oddity 1</span> Stage 1–3 mills: the table gives an upper limit, not the operating value</h3>
+      <p class="one">Stage 1–3 mills list ≤10⁶ Hz; the chain only fits at 10⁴ Hz per unit, which §14.3.3 confirms.</p>
+      <p class="note" id="status"></p>
+      <details class="more"><summary>Finding, resolution and switch</summary>
       <p><b>Finding.</b> With ≤10⁶ Hz taken at its maximum, stages 1–3 would need 100× more input than reagent prep delivers, and make 100× more than stage 4 can take (≈ 80–125 g/s vs ≈ 1 g/s everywhere else).</p>
       <p><b>Resolution.</b> Section 14.3.3 gives the operating value: the early mill sets have an <i>overall</i> operating frequency of about 10⁶ s⁻¹, shared among the 100 units of each set (ups = 100), so <b>about 10⁴ s⁻¹ per unit</b>. That lies within the table’s ≤10⁶, and with it every boundary matches. The table entry is a valid upper limit, just not the value that fits the throughput. The book does not say why the table gives the limit rather than the operating value. Two more passages fit 10⁴ Hz: §13.3.6 works out a mean time to failure for “a single device working at 10⁴ operations per second”, and §14.4.3 states that with all components at their stated frequencies the throughput would be 0.001 kg/s. A chain runs at the pace of its slowest level, so that holds even if stages 1–3 could run up to 10⁶ Hz. (<a href="https://nanosyste.ms/molecular_manufacturing_systems#14.4.%20An%20exemplar%20manufacturing-system%20architecture">§14.3.3 online</a>)</p>
-      <p class="note" id="status"></p>
       <fieldset><legend>In mills, one unit operation means – not stated in the table</legend>
         <div class="radio">
           <label class="t"><input type="radio" name="mc" value="product" checked> one product finished <span style="color:var(--muted)">(assumed)</span></label>
@@ -127,23 +153,31 @@ details.sec>summary h2{margin:0;display:inline}
         </div>
         <p class="note" style="margin:6px 0 0">The table only gives a frequency; what one operation achieves is an assumption. “One product finished” fits the text (mills do “relatively small numbers of operations per output object”) and, with 10⁴ Hz, is the only combination with no continuity break. Manipulators: one operation always places one input; pre-stages: one input in, one out.</p>
       </fieldset>
+      </details>
     </section>
     <section class="card">
       <h3><span class="tag">Oddity 2</span> Stage 1 takes 100 inputs, though (1 nm)³ ÷ (0.5 nm)³ = 8</h3>
+      <p class="one">Stage 1 takes 100 inputs where the size step suggests 8 – it counts transferred atoms, not volume.</p>
+      <p class="note" id="status2"></p>
+      <details class="more"><summary>Finding, resolution and switch</summary>
       <p><b>Finding.</b> Every other step roughly follows inputs/product ≈ (scale step)³. Stage 1 does not, and the pre-stages taken as (0.5 nm)³ blocks would carry ≈ 12.5 g/s, about 12× too much.</p>
       <p><b>Resolution.</b> The 0.5 nm “scale” is the size of what is handled: a reactive group held on a carrier or tool tip via adapters. What is actually deposited is about one atom or a small group. A 1 nm³ stage-1 product at the book’s 1000 kg/m³ weighs ≈ 600 u (≈ 50 C atoms’ worth; solid diamond would hold ≈ 176 C atoms), so ≈ 100 transfers of about one atom each fits. As a check, 10²³ transfers/s × ≈ 6 u ≈ 1 g/s – the same flow as every higher stage. So stage 1 counts atoms, not volume.</p>
+      <div class="eq"><span class="lbl">Payload</span> m = <span class="fr"><span>ρ · s³</span><span>inputs</span></span><span class="u">[ kg ] = <span class="fr"><span>kg</span><span>nm³</span></span> × <span class="fr"><span>nm³</span><span>product</span></span> × <span class="fr"><span>product</span><span>input</span></span></span><span class="u" style="color:var(--muted)">10⁻²⁴ kg/nm³ × 1 nm³ ÷ 100 = 10⁻²⁶ kg ≈ 6 u per input</span></div>
       <fieldset><legend>Pre-stage volume per input (not in table)</legend>
         <div class="radio">
           <label class="t"><input type="radio" name="pv" value="payload" checked> 0.01 nm³ payload (assumed: 1 nm³ ÷ 100 inputs ≈ 6 u)</label>
           <label class="t"><input type="radio" name="pv" value="table"> (0.5 nm)³ = 0.125 nm³ from the scale column</label>
         </div>
-        <p class="note" id="status2" style="margin:6px 0 0"></p>
       </fieldset>
+      </details>
     </section>
     <section class="card">
       <h3><span class="tag">Oddity 3</span> Mill-stage volume: table masses give 5× the text’s volume</h3>
+      <p class="one">The table’s pre-stage and mill masses give 5× the volume §14.4.4 states – unresolved.</p>
+      <details class="more"><summary>Finding and resolution</summary>
       <p><b>Finding.</b> §14.4.4 estimates the volume of input ordering, reagent preparation and the mill stages from the tabulated masses at a mean density of 100 kg/m³ and gets ≈ 1.8 × 10⁻⁴ m³. Summing the table’s masses for those levels gives ≤ 0.09 kg, i.e. ≤ 9 × 10⁻⁴ m³ – five times more.</p>
       <p><b>Unresolved.</b> It would fit if stage 1’s 0.06 kg were 0.006 kg and the “&lt;0.01” entries were ≈ 0.002 kg (sum ≈ 0.018 kg), but that is a guess. The overall mass check is consistent: the table sums to ≤ 0.112 kg, matching §14.4.4’s “&lt; 0.12 kg”. The layer-stack section below lets you switch between both volumes.</p>
+      </details>
     </section>
   </div>
 
@@ -151,15 +185,11 @@ details.sec>summary h2{margin:0;display:inline}
   <p class="sub">Light boxes = table columns, darker = derived. Color family follows the chain: rate (blue), size (orange), continuity (green).</p>
   <svg id="tree" viewBox="0 0 1160 340" role="img" aria-label="Dependency tree of the derived quantities"></svg>
 
-  <h2>Continuity-of-throughput analysis</h2>
-<div class="eq"><span class="lbl">Product</span> V̇ = sets × ups × f × <span class="fr"><span>1</span><span>inputs</span></span><sup>*</sup> × s³<span class="u">[ <span class="fr"><span>nm³</span><span>s</span></span> ] = [ sets ] × <span class="fr"><span>units</span><span>set</span></span> × <span class="fr"><span>operations</span><span>unit · s</span></span> × <span class="fr"><span>products</span><span>operation</span></span> × <span class="fr"><span>nm³</span><span>product</span></span></span></div>
-<div class="eq"><span class="lbl">Log</span> log(V̇ / (nm³/s)) = log sets + log ups + log(f / Hz) − log inputs<sup>*</sup> + log(s³ / nm³)</div>
-<p class="note" style="margin:2px 0 8px"><sup>*</sup> products per operation: 1 for mills (one product finished, assumed), 1 / inputs for manipulators (one input placed). Mass flow ṁ = ρ · V̇ with ρ = 1000 kg/m³ = 10⁻²⁴ kg/nm³ (§14.4.3), so 10²¹ nm³/s = 1 g/s. Each log takes the quantity divided by its unit, so the sum is a pure number.</p>
-  <p class="sub">Multiplication becomes stacking in log₁₀. A log needs a unitless argument, so quantities with units are divided by their unit (Hz, nm³); the units multiply the same way, Hz · nm³ = nm³/s. Segments above 0 multiply, below 0 divide. ◆ = net log₁₀ volume flow [nm³/s]; ▸ = subtotal log₁₀ cycles/s. Dashed line at 21 = 10²¹ nm³/s = 1 cm³/s = 1 g/s at 1000 kg/m³: a continuous chain gives a flat line of ◆ there. Pre-stages: log s³ is replaced by log of the volume per input chosen above (not a table value). Follows all switches above.</p>
-  <div id="stackWrap" style="position:relative"><svg id="stack" viewBox="0 0 1160 498" role="img" aria-label="Stacked log contributions to volume flow per level"></svg><div id="tip2" class="tipc"></div></div>
-
-  <h2>Columns not in the stack, and the continuity check (log axis)</h2>
+  <h2>Supply vs. demand per level (log axis)</h2>
   <p class="sub">Each quantity in its own unit on one log₁₀ axis. sets, ups, f, product scale, cycles/s and volume flow are in the stack-up chart above. Hover a column for values; hollow markers = upper bound (“&lt;” in the table).</p>
+  <div class="eq"><span class="lbl">Continuity</span> needed<sub>n</sub> = p<sub>n</sub> · inputs<sub>n</sub> ≟ p<sub>n−1</sub> = supplied<sub>n</sub><span class="u"><span class="fr"><span>inputs</span><span>s</span></span> = <span class="fr"><span>products</span><span>s</span></span> × <span class="fr"><span>inputs</span><span>product</span></span></span></div>
+  <div class="eq"><span class="lbl">Log</span> log p<sub>n</sub> + log inputs<sub>n</sub> ≟ log p<sub>n−1</sub></div>
+  <div class="eq"><span class="lbl">Scale step</span> inputs<sub>n</sub> ≈ ( <span class="fr"><span>s<sub>n</sub></span><span>s<sub>n−1</sub></span></span> )³<span class="u">[ 1 ] = ( <span class="fr"><span>nm</span><span>nm</span></span> )³</span><span class="u">log inputs<sub>n</sub> ≈ 3 · (log s<sub>n</sub> − log s<sub>n−1</sub>)</span></div>
   <div id="chartWrap"><svg id="chart" viewBox="0 0 1160 588" role="img" aria-label="Log-scale line chart of Table 14.1 parameters per level"></svg><div id="tip"></div></div>
   <p class="note" id="rednote"></p>
   <div class="controls">
@@ -168,15 +198,13 @@ details.sec>summary h2{margin:0;display:inline}
     <fieldset><legend>Derived</legend><div class="grp" id="derBox"></div>
       <div class="btns"><button data-g="der" data-v="1">all</button><button data-g="der" data-v="0">none</button></div></fieldset>
   </div>
-
-  <h2>Mass flow per level (linear)</h2>
-  <p class="sub">Products/s × (product scale)³ × 1000 kg/m³, the handling density §14.4.3 uses for its 0.001 kg/s. Pre-stages: volume per input as chosen above (not a table value). Dashed line: the ~1 g/s design throughput of footnote a.</p>
-  <div id="flowWrap" style="position:relative"><svg id="flow" viewBox="0 0 1160 358" role="img" aria-label="Linear bar chart of mass flow per level"></svg></div>
-
   <details><summary>Table view of what’s plotted</summary><div id="tbl"></div></details>
 
   <h2>Radiation damage and system lifetime (log scale)</h2>
   <p class="sub">How long each level keeps working before radiation damage stops it. A unit is lost when hit; a set works while at least one of its units works; a level works while all its sets work (Eq. 14.1, §14.3.3). Lifetime here = time until the level is still working with probability 1/e ≈ 37 %. Dashed lines: 10 and 100 years.</p>
+  <div class="eq"><span class="lbl">Unit</span> P<sub>unit</sub> = exp(−k · D · m)<span class="u">[ 1 ] = <span class="fr"><span>1</span><span>kg · rad</span></span> × [ rad ] × [ kg ]</span><span class="u" style="color:var(--muted)">k ≈ 10¹⁵ /(kg·rad), D = 0.5 rad/yr × t (§6.6.2, §13.3.6c)</span></div>
+  <div class="eq"><span class="lbl">Level</span> P<sub>level</sub> = [ 1 − (1 − P<sub>unit</sub>)<sup>ups</sup> ]<sup>sets</sup><span class="u" style="color:var(--muted)">Eq. 14.1: a set fails only when all its ups units have failed</span></div>
+  <div class="eq"><span class="lbl">Lifetime</span> P<sub>level</sub> = 1/e  ⇔  (1 − P<sub>unit</sub>)<sup>ups</sup> = 1 − e<sup>−1/sets</sup> ≈ <span class="fr"><span>1</span><span>sets</span></span></div>
   <div style="position:relative"><svg id="life" viewBox="0 0 1160 428" role="img" aria-label="System lifetime per level under radiation damage"></svg></div>
   <div class="controls" style="margin-top:10px">
     <fieldset><legend>Per-unit failure chance in 10 years</legend><div class="radio">
@@ -220,10 +248,10 @@ details.sec>summary h2{margin:0;display:inline}
     <div class="eq"><span class="lbl">Manip.</span> t = <span class="fr"><span>V<sub>ws</sub></span><span>A</span></span><span class="u">[ m ] = [ m³ ] × <span class="fr"><span>1</span><span>m²</span></span></span><span class="u" style="color:var(--muted)">V<sub>ws</sub> = 0.05 m³ / 3 ≈ 0.017 m³ workspace per stage (§14.4.4)</span></div>
     <p class="note" style="margin:0 0 6px">Example, input ordering at A = (0.2 m)²: t = 0.002 kg ÷ (100 kg/m³ · 0.04 m²) = 5 × 10⁻⁴ m = 0.5 mm.</p>
     <p id="cakeSum"></p>
-    <p><b>Compared with the video.</b> The animation <a href="https://archive.org/details/NanoFactory">“Productive Nanosystems: From Molecules to Superproducts”</a> (Burch &amp; Drexler; <a href="https://apm.bplaced.net/w/index.php?title=Productive_Nanosystems_From_molecules_to_superproducts">notes on the APMnT wiki</a>) shows the nanofactory as stacked layers, thickest at the bottom with the smallest machinery and thinner layers above. Looking only at the nanoscale part (the blue mill layers here), the book’s numbers give the same picture: stage 1 mill is the thickest layer, and the layers above get thinner. The video’s mill layers look much like these, but it has only one mill stage, then switches to a manipulator stage while still at the nanoscale, followed by a streaming assembly stage. The macro-scale manipulator stages that dominate the total height here (products of 100 µm to 0.1 m in enclosed workspaces) are mostly optional and mainly useful for recycling and recomposition at the macro scale; §14.4.4 also names the alternative of products “constructed and extruded incrementally”.</p>
+    <p><b>Compared with the video.</b> The animation <a href="https://archive.org/details/NanoFactory">“Productive Nanosystems: From Molecules to Superproducts”</a> (Burch &amp; Drexler; <a href="https://apm.bplaced.net/w/index.php?title=Productive_Nanosystems_From_molecules_to_superproducts">notes on the APMnT wiki</a>) shows the productive nanosystem as stacked layers, thickest at the bottom with the smallest machinery and thinner layers above. Looking only at the nanoscale part (the blue mill layers here), the book’s numbers give the same picture: stage 1 mill is the thickest layer, and the layers above get thinner. The video’s mill layers look much like these, but it has only one mill stage, then switches to a manipulator stage while still at the nanoscale, followed by a streaming assembly stage. The macro-scale manipulator stages that dominate the total height here (products of 100 µm to 0.1 m in enclosed workspaces) are mostly optional and mainly useful for recycling and recomposition at the macro scale; §14.4.4 also names the alternative of products “constructed and extruded incrementally”.</p>
   </div>
 
-  <h2>Added here, not from the book</h2>
+  <h2>Our assumptions (not from the book)</h2>
   <p class="sub">Everything below is an assumption or interpretation made for this page. The column values, the stage grouping and the §14.3.3 frequency resolution are from the book.</p>
   <div class="intro" style="border-left-color:var(--o2)">
     <p><b>Assumptions in the math</b></p>
@@ -234,7 +262,7 @@ details.sec>summary h2{margin:0;display:inline}
       <li><b>“~1” taken as 1; “&lt;0.01”, “&lt;0.001” plotted at that value</b> as upper bounds; “–” left out.</li>
       <li><b>×3 tolerance</b> for when a boundary or a mass flow counts as a break.</li>
       <li><b>Layer stack:</b> flat layers of equal footprint (the book gives no layout), footprint size, and an equal split of the manipulator volume over the three stages.</li>
-      <li><b>Video comparison:</b> that the video’s nanofactory was derived from Table 14.1 (likely, not stated anywhere), and that the macro-scale manipulator stages are mostly optional.</li>
+      <li><b>Video comparison:</b> that the video’s productive nanosystem was derived from Table 14.1 (likely, not stated anywhere), and that the macro-scale manipulator stages are mostly optional.</li>
       <li><b>Radiation section:</b> lifetime defined as the time to 1/e survival, with the book’s constant per-unit failure rate carried on past ten years.</li>
     </ul>
     <p><b>Interpretations</b></p>
@@ -596,7 +624,7 @@ function drawFlow(P){
   });
 }
 document.querySelectorAll(".viz-root > h2").forEach(h=>{
-  const d=document.createElement("details");d.className="sec";d.open=h.textContent.startsWith("Continuity-of-throughput");
+  const d=document.createElement("details");d.className="sec";d.open=/^(Continuity-of-throughput|Mass flow per level|Three oddities)/.test(h.textContent);
   const sm=document.createElement("summary");h.parentNode.insertBefore(d,h);sm.appendChild(h);d.appendChild(sm);
   while(d.nextSibling&&!(d.nextSibling.nodeType===1&&d.nextSibling.tagName==="H2"))d.appendChild(d.nextSibling);
   d.addEventListener("toggle",()=>{if(d.open)draw();});
