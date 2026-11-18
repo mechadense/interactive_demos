@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nanosystems Table 14.1 – throughput chain explorer</title>
+<style>
+.viz-root{
+  color-scheme:light;
+  --surface:#fcfcfb; --surface-2:#f1f0ec; --text:#0b0b0b; --text-2:#52514e; --muted:#8a8984; --grid:#e4e3de;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
+  --bad:#c62828;
+  --b1:#9ec5f4; --b2:#5598e7; --b3:#256abf; --b4:#0d366b;
+  --o1:#f7c3a6; --o2:#f0925f; --o3:#d95926; --o4:#8f3814;
+  --g1:#9ee0c4; --g2:#4cc597; --g3:#139466; --g4:#0b5a3e;
+  --v1:#a99ff0; --v2:#4a3aa7;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])) .viz-root{
+    color-scheme:dark;
+    --surface:#1a1a19; --surface-2:#252523; --text:#f0efec; --text-2:#c3c2b7; --muted:#8d8c86; --grid:#33332f;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767;
+    --bad:#ef5350;
+    --b1:#1c5cab; --b2:#2a78d6; --b3:#5598e7; --b4:#b7d3f6;
+    --o1:#8f3814; --o2:#c4501f; --o3:#f0925f; --o4:#f7c3a6;
+    --g1:#0b5a3e; --g2:#139466; --g3:#4cc597; --g4:#b5ead3;
+    --v1:#6250d6; --v2:#c4bff5;
+  }
+}
+html,body{margin:0;background:var(--surface)}
+body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.viz-root{background:var(--surface);color:var(--text);padding:16px 20px 28px;max-width:1200px;margin:0 auto}
+h1{font-size:18px;margin:0 0 4px}
+.sub{color:var(--text-2);margin:0 0 14px;font-size:13px}
+.controls{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:10px}
+fieldset{border:1px solid var(--grid);border-radius:8px;padding:8px 12px;margin:0}
+legend{color:var(--text-2);font-size:12px;padding:0 4px}
+label.t{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0;white-space:nowrap}
+.sw{display:inline-block;width:22px;height:0;border-top:2px solid;vertical-align:middle}
+.grp{display:grid;grid-template-columns:repeat(2,auto);column-gap:18px;justify-items:start}
+.btns button{font:inherit;font-size:12px;background:var(--surface-2);color:var(--text);border:1px solid var(--grid);border-radius:6px;padding:2px 8px;margin:4px 4px 0 0;cursor:pointer}
+.radio{display:flex;flex-direction:column;gap:2px}
+#chartWrap{position:relative}
+svg{display:block;width:100%;height:auto;overflow:visible}
+label.t svg,.r svg{display:inline-block;width:20px;height:6px;flex:none}
+.axis text{fill:var(--text-2);font-size:11px}
+.gridline{stroke:var(--grid);stroke-width:1}
+.gridline.major{stroke:var(--grid)}
+#tip,.tipc{position:absolute;pointer-events:none;background:var(--surface-2);color:var(--text);border:1px solid var(--grid);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.15);display:none;min-width:230px;z-index:5}
+#tip b,.tipc b{display:block;margin-bottom:4px}
+#tip .r,.tipc .r{display:flex;justify-content:space-between;gap:14px}
+#tip .r span:last-child,.tipc .r span:last-child{font-variant-numeric:tabular-nums}
+.note{color:var(--text-2);font-size:12.5px;margin-top:10px}
+.bad{color:var(--bad);font-weight:600}
+table{border-collapse:collapse;font-size:12px;margin-top:8px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--grid);padding:3px 8px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--text-2);font-weight:500}
+th.der,td.der{background:var(--surface-2);color:var(--text-2)}
+details{margin-top:14px}
+summary{cursor:pointer;color:var(--text-2)}
+.rbtn{font:inherit;font-size:13px;background:var(--surface-2);color:var(--text);border:1px solid var(--grid);border-radius:8px;padding:6px 12px;cursor:pointer}
+h2{font-size:15px;margin:26px 0 2px}
+.eq{font-size:14px;margin:8px 0;line-height:2.1}
+.eq .lbl{display:inline-block;min-width:92px;font-size:12px;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
+.eq .u{color:var(--text-2);margin-left:18px;white-space:nowrap}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:12.5px;line-height:1.15}
+.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 2px}
+details.sec{margin-top:22px}
+details.sec>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"▾";color:var(--muted);font-size:13px;width:12px}
+details.sec:not([open])>summary::before{content:"▸"}
+details.sec>summary h2{margin:0;display:inline}
+.viz-root a{color:var(--b3)}
+.intro{border-left:4px solid var(--b2);padding:2px 14px;margin:4px 0 14px;font-size:13.5px;max-width:980px}
+.intro p{margin:6px 0}.intro ul{margin:4px 0;padding-left:20px}
+.modes{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin:6px 0 14px}
+.mode{font:inherit;text-align:left;display:flex;flex-direction:column;gap:2px;background:var(--surface-2);color:var(--text);border:2px solid var(--grid);border-radius:10px;padding:8px 14px;cursor:pointer}
+.mode b{font-size:14px}.mode span{font-size:12px;color:var(--text-2)}
+.mode.active{border-color:var(--b3);background:color-mix(in srgb,var(--b1) 25%,var(--surface))}
+.mnote{align-self:center;color:var(--muted);font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px}
+.card{border:2px solid var(--o2);border-radius:12px;padding:12px 16px;background:color-mix(in srgb,var(--o1) 12%,var(--surface))}
+.card h3{margin:0 0 6px;font-size:15px}
+.card p{margin:6px 0;font-size:13.5px}
+.card fieldset{margin-top:10px;background:var(--surface);min-width:0}
+.card label.t{white-space:normal;align-items:flex-start}
+.card label.t input{margin-top:3px}
+.card{min-width:0}
+.tag{display:inline-block;background:var(--o3);color:#fff;border-radius:6px;padding:1px 7px;font-size:12px;margin-right:6px;vertical-align:1px}
+.tipsep{border-top:1px solid var(--grid);margin:4px 0 3px}
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <h1>Nanosystems Table 14.1 – throughput chain explorer</h1>
+  <p class="sub" style="margin-bottom:4px">Vibe coded by Lukas M. Süss (aka <a href="https://github.com/mechadense">mechadense</a>) using Anthropic Claude Opus 5.5 (high) – 2026-11-18</p>
+  <p class="sub">Source: K. Eric Drexler, <i>Nanosystems: Molecular Machinery, Manufacturing, and Computation</i> (Wiley, 1992), Chapter 14, Section 14.4 “An exemplar manufacturing-system architecture”, Table 14.1.
+  <a href="https://nanosyste.ms/molecular_manufacturing_systems#14.4.%20An%20exemplar%20manufacturing-system%20architecture">Read the section online (nanosyste.ms)</a> · <a href="https://apm.bplaced.net/w/index.php?title=Nanosystems">Coverage of the book on the APMnT wiki</a></p>
+  <div class="intro">
+    <p><b>What this is about.</b> Chapter 14 of <i>Nanosystems</i> sketches how a desktop-scale molecular manufacturing system could turn a small-molecule feedstock into macroscopic products with atomic precision. Drexler presents it as an exemplar to check the numbers, not as a proposed design. Material flows upward through a series of levels, each building larger parts from many smaller ones (convergent assembly):</p>
+    <ul>
+      <li><b>Pre-stages</b> – input ordering and reagent preparation take feedstock molecules and bind them to carriers and tool tips.</li>
+      <li><b>Mill stages 1–5</b> – many simple, fixed-path mechanisms (like factory production lines) build blocks from about 1 nm up to about 1 µm.</li>
+      <li><b>Manipulator stages 1–3</b> – robot arms put blocks together into parts of 100 µm, 5 mm and finally about 0.1 m.</li>
+    </ul>
+    <p>The system is sized to turn a feedstock solution into ≈ 1 kg products of ≈ 0.2 m in a cycle time of about an hour (§14.4.1). Table 14.1 gives the number of machines, their speed and size per level, chosen to give about 1 g/s overall. This page checks whether those numbers carry the same flow of material from level to level, and explains the two places where they seem not to.</p>
+  </div>
+
+  <div class="modes" role="group" aria-label="Operating mode">
+    <button id="resetN" class="mode active"><b>Operating value (§14.3.3)</b><span>stage 1–3 mills at 10⁴ Hz per unit · continuous chain</span></button>
+    <button id="reset" class="mode"><b>Upper limit from Table 14.1</b><span>stage 1–3 mills with ≤10⁶ Hz taken at its maximum</span></button>
+    <span class="mnote">Either button also resets all other switches and toggles.</span>
+  </div>
+
+  <div class="cards">
+    <section class="card">
+      <h3><span class="tag">Oddity 1</span> Stage 1–3 mills: the table gives an upper limit, not the operating value</h3>
+      <p><b>Finding.</b> With ≤10⁶ Hz taken at its maximum, stages 1–3 would need 100× more input than reagent prep delivers, and make 100× more than stage 4 can take (≈ 80–125 g/s vs ≈ 1 g/s everywhere else).</p>
+      <p><b>Resolution.</b> Section 14.3.3 gives the operating value: the early mill sets have an <i>overall</i> operating frequency of about 10⁶ s⁻¹, shared among the 100 units of each set (ups = 100), so <b>about 10⁴ s⁻¹ per unit</b>. That lies within the table’s ≤10⁶, and with it every boundary matches. The table entry is a valid upper limit, just not the value that fits the throughput. The book does not say why the table gives the limit rather than the operating value. Two more passages fit 10⁴ Hz: §13.3.6 works out a mean time to failure for “a single device working at 10⁴ operations per second”, and §14.4.3 states that with all components at their stated frequencies the throughput would be 0.001 kg/s. A chain runs at the pace of its slowest level, so that holds even if stages 1–3 could run up to 10⁶ Hz. (<a href="https://nanosyste.ms/molecular_manufacturing_systems#14.4.%20An%20exemplar%20manufacturing-system%20architecture">§14.3.3 online</a>)</p>
+      <p class="note" id="status"></p>
+      <fieldset><legend>In mills, one unit operation means – not stated in the table</legend>
+        <div class="radio">
+          <label class="t"><input type="radio" name="mc" value="product" checked> one product finished <span style="color:var(--muted)">(assumed)</span></label>
+          <label class="t"><input type="radio" name="mc" value="input"> one input added</label>
+        </div>
+        <p class="note" style="margin:6px 0 0">The table only gives a frequency; what one operation achieves is an assumption. “One product finished” fits the text (mills do “relatively small numbers of operations per output object”) and, with 10⁴ Hz, is the only combination with no continuity break. Manipulators: one operation always places one input; pre-stages: one input in, one out.</p>
+      </fieldset>
+    </section>
+    <section class="card">
+      <h3><span class="tag">Oddity 2</span> Stage 1 takes 100 inputs, though (1 nm)³ ÷ (0.5 nm)³ = 8</h3>
+      <p><b>Finding.</b> Every other step roughly follows inputs/product ≈ (scale step)³. Stage 1 does not, and the pre-stages taken as (0.5 nm)³ blocks would carry ≈ 12.5 g/s, about 12× too much.</p>
+      <p><b>Resolution.</b> The 0.5 nm “scale” is the size of what is handled: a reactive group held on a carrier or tool tip via adapters. What is actually deposited is about one atom or a small group. A 1 nm³ stage-1 product at the book’s 1000 kg/m³ weighs ≈ 600 u (≈ 50 C atoms’ worth; solid diamond would hold ≈ 176 C atoms), so ≈ 100 transfers of about one atom each fits. As a check, 10²³ transfers/s × ≈ 6 u ≈ 1 g/s – the same flow as every higher stage. So stage 1 counts atoms, not volume.</p>
+      <fieldset><legend>Pre-stage volume per input (not in table)</legend>
+        <div class="radio">
+          <label class="t"><input type="radio" name="pv" value="payload" checked> 0.01 nm³ payload (assumed: 1 nm³ ÷ 100 inputs ≈ 6 u)</label>
+          <label class="t"><input type="radio" name="pv" value="table"> (0.5 nm)³ = 0.125 nm³ from the scale column</label>
+        </div>
+        <p class="note" id="status2" style="margin:6px 0 0"></p>
+      </fieldset>
+    </section>
+    <section class="card">
+      <h3><span class="tag">Oddity 3</span> Mill-stage volume: table masses give 5× the text’s volume</h3>
+      <p><b>Finding.</b> §14.4.4 estimates the volume of input ordering, reagent preparation and the mill stages from the tabulated masses at a mean density of 100 kg/m³ and gets ≈ 1.8 × 10⁻⁴ m³. Summing the table’s masses for those levels gives ≤ 0.09 kg, i.e. ≤ 9 × 10⁻⁴ m³ – five times more.</p>
+      <p><b>Unresolved.</b> It would fit if stage 1’s 0.06 kg were 0.006 kg and the “&lt;0.01” entries were ≈ 0.002 kg (sum ≈ 0.018 kg), but that is a guess. The overall mass check is consistent: the table sums to ≤ 0.112 kg, matching §14.4.4’s “&lt; 0.12 kg”. The layer-stack section below lets you switch between both volumes.</p>
+    </section>
+  </div>
+
+  <h2>How the quantities depend on each other</h2>
+  <p class="sub">Light boxes = table columns, darker = derived. Color family follows the chain: rate (blue), size (orange), continuity (green).</p>
+  <svg id="tree" viewBox="0 0 1160 340" role="img" aria-label="Dependency tree of the derived quantities"></svg>
+
+  <h2>Continuity-of-throughput analysis</h2>
+<div class="eq"><span class="lbl">Product</span> V̇ = sets × ups × f × <span class="fr"><span>1</span><span>inputs</span></span><sup>*</sup> × s³<span class="u">[ <span class="fr"><span>nm³</span><span>s</span></span> ] = [ sets ] × <span class="fr"><span>units</span><span>set</span></span> × <span class="fr"><span>operations</span><span>unit · s</span></span> × <span class="fr"><span>products</span><span>operation</span></span> × <span class="fr"><span>nm³</span><span>product</span></span></span></div>
+<div class="eq"><span class="lbl">Log</span> log(V̇ / (nm³/s)) = log sets + log ups + log(f / Hz) − log inputs<sup>*</sup> + log(s³ / nm³)</div>
+<p class="note" style="margin:2px 0 8px"><sup>*</sup> products per operation: 1 for mills (one product finished, assumed), 1 / inputs for manipulators (one input placed). Mass flow ṁ = ρ · V̇ with ρ = 1000 kg/m³ = 10⁻²⁴ kg/nm³ (§14.4.3), so 10²¹ nm³/s = 1 g/s. Each log takes the quantity divided by its unit, so the sum is a pure number.</p>
+  <p class="sub">Multiplication becomes stacking in log₁₀. A log needs a unitless argument, so quantities with units are divided by their unit (Hz, nm³); the units multiply the same way, Hz · nm³ = nm³/s. Segments above 0 multiply, below 0 divide. ◆ = net log₁₀ volume flow [nm³/s]; ▸ = subtotal log₁₀ cycles/s. Dashed line at 21 = 10²¹ nm³/s = 1 cm³/s = 1 g/s at 1000 kg/m³: a continuous chain gives a flat line of ◆ there. Pre-stages: log s³ is replaced by log of the volume per input chosen above (not a table value). Follows all switches above.</p>
+  <div id="stackWrap" style="position:relative"><svg id="stack" viewBox="0 0 1160 498" role="img" aria-label="Stacked log contributions to volume flow per level"></svg><div id="tip2" class="tipc"></div></div>
+
+  <h2>Columns not in the stack, and the continuity check (log axis)</h2>
+  <p class="sub">Each quantity in its own unit on one log₁₀ axis. sets, ups, f, product scale, cycles/s and volume flow are in the stack-up chart above. Hover a column for values; hollow markers = upper bound (“&lt;” in the table).</p>
+  <div id="chartWrap"><svg id="chart" viewBox="0 0 1160 588" role="img" aria-label="Log-scale line chart of Table 14.1 parameters per level"></svg><div id="tip"></div></div>
+  <p class="note" id="rednote"></p>
+  <div class="controls">
+    <fieldset><legend>Table columns</legend><div class="grp" id="rawBox"></div>
+      <div class="btns"><button data-g="raw" data-v="1">all</button><button data-g="raw" data-v="0">none</button></div></fieldset>
+    <fieldset><legend>Derived</legend><div class="grp" id="derBox"></div>
+      <div class="btns"><button data-g="der" data-v="1">all</button><button data-g="der" data-v="0">none</button></div></fieldset>
+  </div>
+
+  <h2>Mass flow per level (linear)</h2>
+  <p class="sub">Products/s × (product scale)³ × 1000 kg/m³, the handling density §14.4.3 uses for its 0.001 kg/s. Pre-stages: volume per input as chosen above (not a table value). Dashed line: the ~1 g/s design throughput of footnote a.</p>
+  <div id="flowWrap" style="position:relative"><svg id="flow" viewBox="0 0 1160 358" role="img" aria-label="Linear bar chart of mass flow per level"></svg></div>
+
+  <details><summary>Table view of what’s plotted</summary><div id="tbl"></div></details>
+
+  <h2>Radiation damage and system lifetime (log scale)</h2>
+  <p class="sub">How long each level keeps working before radiation damage stops it. A unit is lost when hit; a set works while at least one of its units works; a level works while all its sets work (Eq. 14.1, §14.3.3). Lifetime here = time until the level is still working with probability 1/e ≈ 37 %. Dashed lines: 10 and 100 years.</p>
+  <div style="position:relative"><svg id="life" viewBox="0 0 1160 428" role="img" aria-label="System lifetime per level under radiation damage"></svg></div>
+  <div class="controls" style="margin-top:10px">
+    <fieldset><legend>Per-unit failure chance in 10 years</legend><div class="radio">
+      <label class="t"><input type="radio" name="rf" value="book" checked> 1 % for every unit (as in §14.4.5: the 2 fg bound)</label>
+      <label class="t"><input type="radio" name="rf" value="mass"> from each level’s sensitive mass in the table, via exp(−10¹⁵ · D · m)</label>
+    </div></fieldset>
+    <fieldset><legend>Extra failures</legend>
+      <label class="t"><input type="checkbox" id="stepf"> add +0.3 % per 10 years for mill units from failing reaction steps (§14.3.3)</label>
+    </fieldset>
+  </div>
+  <div class="intro" style="border-left-color:var(--v2);margin-top:12px">
+    <p><b>From the book (§14.3.3, §14.4.5).</b> Units with ≤ 2 fg of radiation-sensitive mass have about a 1 % chance of failing within ten years. Radiation mainly threatens mill stages 1–3: earlier stages are massively redundant, later stages are built from parts large enough to tolerate damage. For stages 1–3 the text calculates with <b>ups = 10</b> (N<sub>unit</sub>) and sets ≈ 10¹⁵ (N<sub>set</sub>), so units = sets · ups ≈ 10¹⁶, and finds they almost surely survive ten years; ups = 20 gives over a century. (<a href="https://nanosyste.ms/molecular_manufacturing_systems#14.4.%20An%20exemplar%20manufacturing-system%20architecture">§14.4 online</a>)</p>
+    <p><b>The damage model (§6.6.2–6.6.3, §13.3.6c).</b> A unit survives a dose D [rad] with probability P<sub>func</sub> ≈ exp(−10¹⁵ · D · m), m = radiation-sensitive mass in kg. The rate of ≈ 10¹⁵ inactivating hits per kg per rad is taken from enzyme inactivation data. At a background of 0.5 rad/year, m = 2 fg gives 1 % in ten years, matching the figure above. For parts much larger than ≈ 100 nm the book switches to an m<sup>2/3</sup> law (Eq. 6.54); the masses here are below that.</p>
+    <p><b>Conservative: one hit = one failed unit.</b> The model assumes failure after a single inactivating hit (Fig. 6.13), and fail-stop units stop rather than make faulty products (§13.3.6b). The book argues the 10¹⁵ rate is unlikely to be much too low: diamondoid parts heal most excitations, though their tight design tolerates fewer changes than proteins do. So the lifetimes shown are more likely too short than too long.</p>
+    <p><b>Mismatch with the table.</b> Table 14.1 lists <b>ups = 100</b> for stages 1–3, not 10. With ups = 100 the lifetime is much longer: ≈ 1200 years instead of ≈ 30 for stage 1 (book’s worst-case failure rate). The 100 are also what splits the ≈ 10⁶ s⁻¹ set frequency into 10⁴ s⁻¹ per unit. The text also uses stage 1’s 10¹⁵ sets for all three stages, the worst case.</p>
+  </div>
+
+  <h2>Layer stack: how thick each level would be (linear, zoomable)</h2>
+  <p class="sub">The book gives volumes but no layout (§14.4.1 sums workspace volumes “without describing a particular three-dimensional layout”). Stacking the levels as flat layers of equal footprint is our construction. Thickness = volume ÷ footprint area.</p>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+    <div style="flex:1 1 560px;min-width:420px;position:relative"><svg id="cake" viewBox="0 0 640 560" role="img" aria-label="Layer stack of all levels, thickness to scale"></svg></div>
+    <div style="flex:1 1 380px" id="cakeTbl"></div>
+  </div>
+  <div class="controls" style="margin-top:10px">
+    <fieldset><legend>Footprint (square side)</legend>
+      <label class="t"><input type="range" id="fp" min="-2" max="0" step="0.01" value="-0.699" style="width:220px"> <span id="fpv"></span></label>
+      <p class="note" style="margin:4px 0 0;max-width:300px">Not in the book. 20 cm lets the ≈ 0.2 m product fit; 10 cm = 1 dm².</p>
+    </fieldset>
+    <fieldset><legend>Zoom: visible height from the bottom (or scroll on the stack)</legend>
+      <label class="t"><input type="range" id="zm" min="0" max="1" step="0.001" value="0" style="width:260px"> <span id="zmv"></span></label>
+      <div class="btns"><button id="zAll">whole stack</button><button id="zMill">pre-stages + mills</button><button id="zPre">pre-stages</button></div>
+    </fieldset>
+    <fieldset><legend>Volume of pre-stages + mills (Oddity 3)</legend><div class="radio">
+      <label class="t"><input type="radio" name="mv" value="table" checked> from table masses at 100 kg/m³ (≤ 9 × 10⁻⁴ m³)</label>
+      <label class="t"><input type="radio" name="mv" value="text"> §14.4.4 total ≈ 1.8 × 10⁻⁴ m³ (split in table proportions)</label>
+    </div></fieldset>
+  </div>
+  <div class="intro" style="border-left-color:var(--o2);margin-top:12px">
+    <p><b>Volumes used.</b> Pre-stages and mills: “total mass of mechanisms” at a mean density of 100 kg/m³ (§14.4.4); “&lt;” entries at their bound. Manipulator stages: their volume is set by the workspace, not by mechanism mass. §14.4.4 takes ≈ 0.01 m³ for a 1 kg product, ≈ 0.03 m³ for the three stages, × 1.66 for packing and cooling ≈ 0.05 m³. Each stage holds a time-average product mass of ≈ 0.5 kg (§14.4.3), so it is split equally here, ≈ 0.017 m³ per stage.</p>
+    <div class="eq"><span class="lbl">Pre + mills</span> t = <span class="fr"><span>m</span><span>ρ · A</span></span><span class="u">[ m ] = [ kg ] × <span class="fr"><span>m³</span><span>kg</span></span> × <span class="fr"><span>1</span><span>m²</span></span></span><span class="u" style="color:var(--muted)">m = total mass of mechanisms (table), ρ = 100 kg/m³ (§14.4.4), A = footprint</span></div>
+    <div class="eq"><span class="lbl">Manip.</span> t = <span class="fr"><span>V<sub>ws</sub></span><span>A</span></span><span class="u">[ m ] = [ m³ ] × <span class="fr"><span>1</span><span>m²</span></span></span><span class="u" style="color:var(--muted)">V<sub>ws</sub> = 0.05 m³ / 3 ≈ 0.017 m³ workspace per stage (§14.4.4)</span></div>
+    <p class="note" style="margin:0 0 6px">Example, input ordering at A = (0.2 m)²: t = 0.002 kg ÷ (100 kg/m³ · 0.04 m²) = 5 × 10⁻⁴ m = 0.5 mm.</p>
+    <p id="cakeSum"></p>
+    <p><b>Compared with the video.</b> The animation <a href="https://archive.org/details/NanoFactory">“Productive Nanosystems: From Molecules to Superproducts”</a> (Burch &amp; Drexler; <a href="https://apm.bplaced.net/w/index.php?title=Productive_Nanosystems_From_molecules_to_superproducts">notes on the APMnT wiki</a>) shows the nanofactory as stacked layers, thickest at the bottom with the smallest machinery and thinner layers above. Looking only at the nanoscale part (the blue mill layers here), the book’s numbers give the same picture: stage 1 mill is the thickest layer, and the layers above get thinner. The video’s mill layers look much like these, but it has only one mill stage, then switches to a manipulator stage while still at the nanoscale, followed by a streaming assembly stage. The macro-scale manipulator stages that dominate the total height here (products of 100 µm to 0.1 m in enclosed workspaces) are mostly optional and mainly useful for recycling and recomposition at the macro scale; §14.4.4 also names the alternative of products “constructed and extruded incrementally”.</p>
+  </div>
+
+  <h2>Added here, not from the book</h2>
+  <p class="sub">Everything below is an assumption or interpretation made for this page. The column values, the stage grouping and the §14.3.3 frequency resolution are from the book.</p>
+  <div class="intro" style="border-left-color:var(--o2)">
+    <p><b>Assumptions in the math</b></p>
+    <ul>
+      <li><b>What one unit operation does.</b> Mills: one product finished. Manipulators: one input placed. Pre-stages: one input in, one out. The table gives only a frequency. The manipulator reading is forced by the numbers (10⁶ inputs per product at 500 Hz).</li>
+      <li><b>Product volume = s³.</b> “Product scale” is treated as the edge of a cube. With the book’s 1000 kg/m³ (§14.4.3) this gives exactly its ≈ 1 g/s, which suggests the book counted the same way.</li>
+            <li><b>Pre-stage payload 0.01 nm³</b> per input (1 nm³ ÷ 100 inputs ≈ 6 u at 1000 kg/m³, about one atom).</li>
+      <li><b>“~1” taken as 1; “&lt;0.01”, “&lt;0.001” plotted at that value</b> as upper bounds; “–” left out.</li>
+      <li><b>×3 tolerance</b> for when a boundary or a mass flow counts as a break.</li>
+      <li><b>Layer stack:</b> flat layers of equal footprint (the book gives no layout), footprint size, and an equal split of the manipulator volume over the three stages.</li>
+      <li><b>Video comparison:</b> that the video’s nanofactory was derived from Table 14.1 (likely, not stated anywhere), and that the macro-scale manipulator stages are mostly optional.</li>
+      <li><b>Radiation section:</b> lifetime defined as the time to 1/e survival, with the book’s constant per-unit failure rate carried on past ten years.</li>
+    </ul>
+    <p><b>Interpretations</b></p>
+    <ul>
+      <li><b>Oddity 2 explanation:</b> a reactive group held on a carrier or tool tip via adapters, with only about one atom deposited per transfer. The book does not state it in this form.</li>
+      <li><b>Expectation inputs/product ≈ (sₙ / sₙ₋₁)³:</b> a plausibility check brought in here, not a rule from the book.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+const L = ["Input ordering","Reagent prep.","Stage 1 mill","Stage 2 mill","Stage 3 mill","Stage 4 mill","Stage 5 mill","Stage 1 manip.","Stage 2 manip.","Stage 3 manip."];
+const kind = ["pre","pre","mill","mill","mill","mill","mill","manip","manip","manip"];
+// raw table (null = "–"); ub = upper-bound flags
+const sets   = [1,1,1e15,1e13,1e11,1e9,1e6,1e9,1e4,1];
+const units  = [1e17,1e17,100,100,100,100,100,2,2,2];
+const inputs = [1,1,100,100,100,100,1000,1e6,1e5,1e4];
+const freqPrinted = [1e6,1e6,1e6,1e6,1e6,1e4,1e4,500,50,5];
+const freqUB = [0,0,1,1,1,0,0,0,0,0];
+const pscale = [0.5,0.5,1,5,20,100,1000,1e5,5e6,1e8];
+const mscale = [20,20,20,20,100,500,5000,2e5,1e7,2e8];
+const rmass  = [0.02,0.06,0.60,0.60,0.50,null,null,null,null,null];
+const tmass  = [0.002,0.006,0.06,0.01,0.01,0.001,0.001,0.001,0.001,0.020];
+const tmassUB= [0,0,0,1,1,1,1,1,1,0];
+
+const C = i => `var(--s${i})`;
+const series = [
+  {id:"inp",   g:"raw", name:"Inputs per product", unit:"", col:"var(--g1)", w:2.5, on:1, f:()=>inputs},
+  {id:"ms",    g:"raw", name:"Mechanism scale", unit:"nm", col:"var(--muted)", on:1, f:()=>mscale},
+  {id:"rm",    g:"raw", name:"Unit radiation-sensitive mass", unit:"fg", col:"var(--v1)", w:2.5, on:1, f:()=>rmass},
+  {id:"tm",    g:"raw", name:"Total mass of mechanisms", unit:"kg", col:"var(--v2)", w:2.5, on:1, f:()=>tmass, ub:()=>tmassUB},
+
+  {id:"prod",  g:"der", name:"Products/s  p = c  (manip.: c ÷ inputs)", unit:"1/s", col:"var(--b4)", dash:"7 4", w:2.5, on:1, f:s=>prods(s)},
+  {id:"need",  g:"der", name:"Inputs needed/s = p · inputs", unit:"1/s", col:"var(--g4)", dash:"7 4", w:2.5, on:1, f:s=>prods(s).map((p,i)=>i<2?p:p*inputs[i])},
+  {id:"sup",   g:"der", name:"Supplied = p of level below", unit:"1/s", col:"var(--g3)", dash:"2 3", w:2.5, on:1, f:s=>prods(s).map((p,i,a)=>i<2?(i==1?a[0]:null):a[i-1])},
+  {id:"ratio", g:"der", name:"(sₙ / sₙ₋₁)³  ≈ inputs/product?", unit:"", col:"var(--o2)", dash:"2 3", w:2.5, on:1, f:()=>pscale.map((v,i)=>i<2?null:(v/pscale[i-1])**3)},
+];
+let fMill = 1e4, millMode = "product", preVol = 0.01;
+function freq(){return freqPrinted.map((v,i)=>(i>=2&&i<=4)?fMill:v);}
+function cycles(){const f=freq();return sets.map((s,i)=>s*units[i]*f[i]);}
+function prods(){const c=cycles();return c.map((v,i)=>(kind[i]==="manip"||(kind[i]==="mill"&&millMode==="input"))?v/inputs[i]:v);}
+
+// controls
+const boxes={raw:document.getElementById("rawBox"),der:document.getElementById("derBox")};
+series.forEach(s=>{
+  const l=document.createElement("label");l.className="t";
+  const sw=s.dash?`<svg width="24" height="6" style="vertical-align:middle"><line x1="0" y1="3" x2="24" y2="3" stroke="${s.col}" stroke-width="2.5" stroke-dasharray="${s.dash||''}"/></svg>`:`<span class="sw" style="border-color:${s.col};border-top-width:${s.w||2}px"></span>`;
+  l.innerHTML=`<input type="checkbox" ${s.on?"checked":""}> ${sw} ${s.name}${s.unit?` <span style="color:var(--muted)">[${s.unit}]</span>`:""}`;
+  l.querySelector("input").addEventListener("change",e=>{s.on=e.target.checked?1:0;draw();});
+  s.cb=l.querySelector("input");
+  boxes[s.g].appendChild(l);
+});
+document.querySelectorAll(".btns button").forEach(b=>b.addEventListener("click",()=>{
+  series.filter(s=>s.g===b.dataset.g).forEach(s=>{s.on=+b.dataset.v;s.cb.checked=!!s.on;});draw();}));
+document.querySelectorAll('input[name=mc]').forEach(r=>r.addEventListener("change",e=>{millMode=e.target.value;draw();}));
+series.forEach(s=>s.def=s.on);
+document.querySelectorAll('input[name=pv]').forEach(r=>r.addEventListener("change",e=>{preVol=e.target.value==="table"?0.125:0.01;draw();}));
+function resetAll(fr){
+  series.forEach(s=>{s.on=s.def;s.cb.checked=!!s.on;});
+  fMill=fr;millMode="product";preVol=0.01;
+  document.getElementById("resetN").classList.toggle("active",fr===1e4);
+  document.getElementById("reset").classList.toggle("active",fr===1e6);
+  document.querySelector('input[name=mc][value="product"]').checked=true;
+  document.querySelector('input[name=pv][value="payload"]').checked=true;
+  document.querySelector('input[name=rf][value="book"]').checked=true;
+  document.getElementById("stepf").checked=false;
+  draw();}
+document.getElementById("reset").addEventListener("click",()=>resetAll(1e6));
+document.getElementById("resetN").addEventListener("click",()=>resetAll(1e4));
+
+const svg=document.getElementById("chart"), tip=document.getElementById("tip");
+const W=1160,H=588,m={l:62,r:20,t:14,b:86};
+const iw=W-m.l-m.r, ih=H-m.t-m.b;
+const x=i=>m.l+iw*(i+0.5)/L.length;
+const NS="http://www.w3.org/2000/svg";
+const el=(n,a,p)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e;};
+const sup=n=>String(n).replace(/-/g,"⁻").replace(/\d/g,d=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[d]);
+function mfmt(v){return v<1e3?v+" nm":v<1e6?(+(v/1e3).toPrecision(3))+" µm":(+(v/1e6).toPrecision(3))+" mm";}
+function xlab(par,cx,y0,i){
+  const p=L[i].split(" "), lines=p.length>2?[p.slice(0,2).join(" "),p.slice(2).join(" ")]:[L[i]];
+  const nn=lines.length; lines.push("(prod. "+mfmt(pscale[i])+")","(mech. "+mfmt(mscale[i])+")");
+  lines.forEach((ln,j)=>{const t=el("text",{x:cx,y:y0+j*14,"text-anchor":"middle",fill:j>=nn?"var(--muted)":"var(--text-2)","font-size":11},par);t.textContent=ln;});
+}
+function fmt(v){if(v==null)return"–";if(v===0)return"0";const e=Math.floor(Math.log10(Math.abs(v))+1e-9);
+  if(e>=-2&&e<=4)return(+v.toPrecision(3)).toString();const mt=v/10**e;
+  return (Math.abs(mt-1)<1e-9?"":(+mt.toPrecision(3))+"×")+"10"+sup(e);}
+
+function draw(){
+  svg.innerHTML="";
+  const vis=series.filter(s=>s.on).map(s=>({s,v:s.f(),ub:s.ub?s.ub():null}));
+  let lo=Infinity,hi=-Infinity;
+  vis.forEach(o=>o.v.forEach(v=>{if(v!=null&&v>0){lo=Math.min(lo,v);hi=Math.max(hi,v);}}));
+  if(!isFinite(lo)){lo=1;hi=10;}
+  const e0=Math.floor(Math.log10(lo)),e1=Math.ceil(Math.log10(hi))||e0+1;
+  const y=v=>m.t+ih*(1-(Math.log10(v)-e0)/(e1-e0||1));
+  // shading pre-stages / mills / manip
+  [[0,2,"pre-stages"],[2,7,"mills"],[7,10,"manipulators"]].forEach(([a,b,t],k)=>{
+    if(k%2==0)el("rect",{x:m.l+iw*a/L.length,y:m.t,width:iw*(b-a)/L.length,height:ih,fill:"var(--surface-2)",opacity:.6});
+    el("text",{x:m.l+iw*(a+b)/2/L.length,y:H-6,"text-anchor":"middle",fill:"var(--muted)","font-size":11}).textContent=t;
+  });
+  // y grid
+  const step=Math.max(1,Math.ceil((e1-e0)/14));
+  const ax=el("g",{class:"axis"});
+  for(let e=e0;e<=e1;e+=step){
+    el("line",{x1:m.l,x2:W-m.r,y1:y(10**e),y2:y(10**e),class:"gridline"},ax);
+    const t=el("text",{x:m.l-8,y:y(10**e)+4,"text-anchor":"end"},ax);t.textContent="10"+sup(e);
+  }
+  L.forEach((n,i)=>xlab(svg,x(i),H-m.b+18,i));
+  // mismatch highlights (supplied vs needed)
+  const P=prods(), bad=[];
+  for(let i=2;i<L.length;i++){const need=P[i]*inputs[i],have=P[i-1];const r=need/have;if(r>3||r<1/3)bad.push([i,r]);}
+  if(series.find(s=>s.id==="need").on&&series.find(s=>s.id==="sup").on){
+    bad.forEach(([i,r])=>{const a=y(P[i]*inputs[i]),b=y(P[i-1]);
+      el("line",{x1:x(i),x2:x(i),y1:a,y2:b,stroke:"var(--bad)","stroke-width":6,opacity:.25,"stroke-linecap":"round"});});
+  }
+  // lines
+  vis.forEach(({s,v,ub})=>{
+    let d="",pen=false;
+    v.forEach((val,i)=>{if(val==null||val<=0){pen=false;return;}d+=(pen?"L":"M")+x(i)+","+y(val);pen=true;});
+    el("path",{d,fill:"none",stroke:s.col,"stroke-width":s.w||2,"stroke-dasharray":s.dash||"","stroke-linejoin":"round","stroke-linecap":"round"});
+    v.forEach((val,i)=>{if(val==null||val<=0)return;const hollow=ub&&ub[i];
+      el("circle",{cx:x(i),cy:y(val),r:4.5,fill:hollow?"var(--surface)":s.col,stroke:hollow?s.col:"var(--surface)","stroke-width":2});});
+  });
+  // hover columns
+  const hl=el("line",{y1:m.t,y2:m.t+ih,stroke:"var(--muted)","stroke-width":1,"stroke-dasharray":"3 3",opacity:0});
+  L.forEach((n,i)=>{const r=el("rect",{x:m.l+iw*i/L.length,y:m.t,width:iw/L.length,height:ih,fill:"transparent"});
+    r.addEventListener("mousemove",ev=>{
+      hl.setAttribute("x1",x(i));hl.setAttribute("x2",x(i));hl.setAttribute("opacity",1);
+      let h=`<b>${n}</b>`;
+      vis.forEach(({s,v,ub},k)=>{if(k&&s.g==="der"&&vis[k-1].s.g==="raw")h+=`<div class="tipsep"></div>`;
+        h+=`<div class="r"><span><svg width="20" height="6" style="vertical-align:middle"><line x1="0" y1="3" x2="20" y2="3" stroke="${s.col}" stroke-width="2.5" stroke-dasharray="${s.dash||""}"/></svg> ${s.name}</span><span>${ub&&ub[i]?(s.id==="freq"?"≤":"<"):""}${fmt(v[i])}${s.unit&&v[i]!=null?" "+s.unit:""}</span></div>`;});
+      const bd=bad.find(b=>b[0]===i);if(bd)h+=`<div class="bad" style="margin-top:4px">needs ${fmt(bd[1])}× what the level below supplies</div>`;
+      tip.innerHTML=h;tip.style.display="block";
+      const wr=svg.getBoundingClientRect(),px=ev.clientX-wr.left,py=ev.clientY-wr.top;
+      tip.style.left=(px>wr.width*0.6?px-tip.offsetWidth-14:px+14)+"px";tip.style.top=Math.max(0,py-20)+"px";});
+    r.addEventListener("mouseleave",()=>{tip.style.display="none";hl.setAttribute("opacity",0);});
+  });
+  // status
+  const st=document.getElementById("status");
+  st.innerHTML=bad.length?`<span class="bad">Continuity breaks:</span> `+bad.map(([i,r])=>`${L[i-1]} → ${L[i]}: needs ${fmt(r)}× supply`).join(" · ")+` <span style="color:var(--muted)">(red bars, when “needed” and “supplied” are both shown)</span>`
+    :`<b>No continuity breaks</b> – every level consumes what the level below makes (within ×3).`;
+  document.getElementById("rednote").innerHTML=bad.length
+    ?`<span class="bad">Red vertical bars</span> mark continuity breaks: the gap between “inputs needed” and “supplied” at a level. `+bad.map(([i,r])=>`${L[i]}: needs ${fmt(r)}× what ${L[i-1]} supplies`).join(" · ")+`. Shown while both of those series are switched on.`
+    :`Red vertical bars would mark continuity breaks (a gap between “inputs needed” and “supplied”). With the operating value there are none, so the two curves overlap; press “Upper limit from Table 14.1” at the top to see them.`;
+  // mass-flow check: compare each level with the median level
+  const G=massFlow(P), med=[...G].sort((a,b)=>a-b)[Math.floor(G.length/2)];
+  const off=G.map((g,i)=>[i,g/med]).filter(([i,r])=>r>3||r<1/3);
+  document.getElementById("status2").innerHTML=off.length
+    ?`<span class="bad">Mass-flow breaks:</span> `+off.map(([i,r])=>`${L[i]} ${+G[i].toPrecision(2)} g/s (${fmt(+r.toPrecision(2))}× typical)`).join(" · ")+` <span style="color:var(--muted)">(typical = median ${+med.toPrecision(2)} g/s)</span>`
+    :`<b>No mass-flow breaks</b> – every level carries about ${+med.toPrecision(2)} g/s (within ×3).`;
+  // table
+  let t="<table><tr><th>Level</th>"+vis.map(o=>`<th${o.s.g==="der"?' class="der"':""}>${o.s.name}${o.s.unit?" ["+o.s.unit+"]":""}</th>`).join("")+"</tr>";
+  L.forEach((n,i)=>{t+=`<tr><td>${n}</td>`+vis.map(o=>`<td${o.s.g==="der"?' class="der"':""}>${o.ub&&o.ub[i]?(o.s.id==="freq"?"≤":"<"):""}${fmt(o.v[i])}</td>`).join("")+"</tr>";});
+  document.getElementById("tbl").innerHTML=t+"</table>";
+  drawFlow(P);
+  drawStack();
+  drawLife();
+  drawCake();
+}
+function drawTree(){
+  const ts=document.getElementById("tree");
+  const B={
+    sets:[10,8,"sets","b1",0], ups:[10,60,"ups (units per set)","b1",0], f:[10,112,"frequency f","b1",0],
+    inp:[10,176,"inputs / product","g1",0], s:[10,240,"product scale s","o1",0],
+    u:[200,26,"units|= sets · ups","b2",1],
+    c:[390,90,"cycles/s|c = units · f","b3",1], s3:[390,240,"s³","o2",1],
+    p:[590,112,"products/s|p = c   (mill)|p = c ÷ inputs   (manip.)","b4",1],
+    need:[825,150,"inputs needed/s|= p · inputs","g3",1], V:[825,240,"volume flow|V = p · s³","o3",1],
+    chk:[1000,150,"continuity check|needed ≈ p below","g4",1], M:[1000,240,"mass flow|= ρ · V","o4",1],
+    rat:[200,292,"(sₙ / sₙ₋₁)³  ≈  inputs / product ?","o2",1],
+  };
+  const w={sets:160,ups:160,f:160,inp:160,s:160,u:150,c:165,s3:165,p:205,need:150,V:150,chk:150,M:150,rat:290};
+  const hgt=k=>16+B[k][2].split("|").length*15;
+  const mid=(k,side)=>{const [x,y]=B[k];return [side?x+w[k]:x, y+hgt(k)/2];};
+  const E=[["sets","u"],["ups","u"],["u","c"],["f","c"],["c","p"],["inp","p"],["inp","need"],["p","need"],["p","V"],["s","s3"],["s3","V"],["need","chk"],["V","M"]];
+  const defs=el("defs",{},ts);const mk=el("marker",{id:"ar",viewBox:"0 0 10 10",refX:9,refY:5,markerWidth:7,markerHeight:7,orient:"auto"},defs);
+  el("path",{d:"M0,0L10,5L0,10z",fill:"var(--muted)"},mk);
+  E.forEach(([a,b])=>{const [x1,y1]=mid(a,1),[x2,y2]=mid(b,0);const dx=(x2-x1)/2;
+    el("path",{d:`M${x1},${y1}C${x1+dx},${y1} ${x2-dx},${y2} ${x2-2},${y2}`,fill:"none",stroke:"var(--muted)","stroke-width":1.5,"marker-end":"url(#ar)"},ts);});
+  // dotted links for the scale-ratio check
+  [["s","rat"]].forEach(([a,b])=>{const [x1,y1]=mid(a,1),[x2,y2]=mid(b,0);
+    el("path",{d:`M${x1},${y1}C${x1+40},${y1} ${x2-40},${y2} ${x2-2},${y2}`,fill:"none",stroke:"var(--muted)","stroke-dasharray":"3 3","stroke-width":1.5,"marker-end":"url(#ar)"},ts);});
+  Object.keys(B).forEach(k=>{const [x,y,txt,col,der]=B[k];const h=hgt(k);
+    el("rect",{x,y,width:w[k],height:h,rx:8,fill:der?`var(--${col})`:"var(--surface)",stroke:`var(--${col})`,"stroke-width":2,"fill-opacity":der?0.22:1},ts);
+    el("rect",{x,y,width:5,height:h,rx:2,fill:`var(--${col})`},ts);
+    txt.split("|").forEach((ln,j)=>{const t=el("text",{x:x+14,y:y+19+j*15,fill:j?"var(--text-2)":"var(--text)","font-size":j?12:13,"font-weight":j?400:600},ts);t.textContent=ln;});
+  });
+  ["ρ = 1000 kg/m³ (§14.4.3).","Not in the chain: mechanism scale, radiation-sensitive mass, total mass of mechanisms."].forEach((ln,j)=>{
+    const t=el("text",{x:590,y:304+j*16,fill:"var(--muted)","font-size":11.5},ts);t.textContent=ln;});
+}
+function drawStack(){
+  const ss=document.getElementById("stack");ss.innerHTML="";
+  const f=freq();
+  const segs=[
+    {k:"sets",n:"log sets",ink:"var(--text)",col:"var(--b1)",v:sets.map(Math.log10)},
+    {k:"ups",n:"log ups",col:"var(--b2)",v:units.map(Math.log10)},
+    {k:"f",n:"log(f / Hz)",col:"var(--b3)",v:f.map(Math.log10)},
+    {k:"inp",n:"− log inputs (÷ inputs)",ink:"var(--text)",col:"var(--g2)",v:inputs.map((v,i)=>(kind[i]==="manip"||(kind[i]==="mill"&&millMode==="input"))?-Math.log10(v):0)},
+    {k:"s",n:"log(s³ / nm³)  (pre-stages: volume per input)",ink:"var(--text)",col:"var(--o2)",v:pscale.map((v,i)=>i<2?Math.log10(preVol):3*Math.log10(v))},
+  ];
+  const net=L.map((_,i)=>segs.reduce((a,s)=>a+s.v[i],0));
+  const cyc=L.map((_,i)=>segs[0].v[i]+segs[1].v[i]+segs[2].v[i]);
+  let hi=0,lo=0;L.forEach((_,i)=>{let pp=0,nn=0;segs.forEach(s=>{if(s.v[i]>0)pp+=s.v[i];else nn+=s.v[i];});hi=Math.max(hi,pp);lo=Math.min(lo,nn);});
+  hi=Math.ceil(hi/2)*2+1;lo=Math.floor(lo/2)*2-1;
+  const SW=1160,SH=498,sm={l:62,r:20,t:30,b:72},sw=SW-sm.l-sm.r,sh=SH-sm.t-sm.b;
+  const sx=i=>sm.l+sw*(i+0.5)/L.length, sy=v=>sm.t+sh*(hi-v)/(hi-lo);
+  // legend
+  let lx=sm.l;segs.forEach(s=>{el("rect",{x:lx,y:4,width:12,height:12,rx:3,fill:s.col},ss);
+    const t=el("text",{x:lx+17,y:14,fill:"var(--text-2)","font-size":12},ss);t.textContent=s.n;lx+=t.getComputedTextLength()+40;});
+  for(let v=lo+1;v<=hi;v+=2){el("line",{x1:sm.l,x2:SW-sm.r,y1:sy(v),y2:sy(v),class:"gridline"},ss);}
+  for(let v=Math.ceil(lo/4)*4;v<=hi;v+=4){const t=el("text",{x:sm.l-8,y:sy(v)+4,"text-anchor":"end",fill:"var(--text-2)","font-size":11},ss);t.textContent=v;}
+  el("line",{x1:sm.l,x2:SW-sm.r,y1:sy(0),y2:sy(0),stroke:"var(--text-2)","stroke-width":1},ss);
+  el("line",{x1:sm.l,x2:SW-sm.r,y1:sy(21),y2:sy(21),stroke:"var(--muted)","stroke-dasharray":"5 4","stroke-width":1.5},ss);
+  const bw=sw/L.length*0.5;
+  L.forEach((n,i)=>{
+    let up=0,dn=0;
+    segs.forEach(s=>{const v=s.v[i];if(Math.abs(v)<1e-9)return;
+      let a,b;if(v>0){a=up;b=up+v;up=b;}else{a=dn;b=dn+v;dn=b;}
+      const y1=sy(Math.max(a,b)),y2=sy(Math.min(a,b));
+      el("rect",{x:sx(i)-bw/2,y:y1+1,width:bw,height:Math.max(y2-y1-2,0.5),rx:3,fill:s.col},ss);
+      if(y2-y1>15){const t=el("text",{x:sx(i),y:(y1+y2)/2+4,"text-anchor":"middle",fill:s.ink||"#fff","font-size":11,"font-weight":600},ss);t.textContent=(v>0?"":"−")+(+Math.abs(v).toFixed(1));}
+    });
+    // cycles subtotal tick
+    el("path",{d:`M${sx(i)-bw/2-9},${sy(cyc[i])-5}l7,5l-7,5z`,fill:"var(--b4)"},ss);
+    const off=Math.abs(net[i]-21)>0.5;
+    el("path",{d:`M${sx(i)+bw/2+8},${sy(net[i])}l7,-7l7,7l-7,7z`,fill:off?"var(--bad)":"var(--text)"},ss);
+    const t=el("text",{x:sx(i)+bw/2+24,y:sy(net[i])+4,fill:off?"var(--bad)":"var(--text)","font-size":12,"font-weight":600},ss);t.textContent=(+net[i].toFixed(1));
+    xlab(ss,sx(i),SH-sm.b+18,i);
+    // hover
+    const hr=el("rect",{x:sm.l+sw*i/L.length,y:sm.t,width:sw/L.length,height:sh,fill:"transparent"},ss);
+    const tip2=document.getElementById("tip2");
+    hr.addEventListener("mousemove",ev=>{
+      let h=`<b>${n}</b>`;segs.forEach(s=>{h+=`<div class="r"><span><span class="sw" style="border-color:${s.col};border-top-width:8px;width:10px"></span> ${s.n}</span><span>${(+s.v[i].toFixed(2))}</span></div>`;});
+      h+=`<div class="r" style="border-top:1px solid var(--grid);margin-top:3px;padding-top:3px"><span>log units = log sets + log ups</span><span>${(+(segs[0].v[i]+segs[1].v[i]).toFixed(2))}</span></div><div class="r"><span>▸ log(cycles/s ÷ 1/s)</span><span>${(+cyc[i].toFixed(2))}</span></div>`;
+      h+=`<div class="r"><b style="margin:0">◆ log(V / (nm³/s))</b><b style="margin:0">${(+net[i].toFixed(2))}</b></div>`;
+      h+=`<div class="r"><span>= ${(10**(net[i]-21)).toPrecision(2)} cm³/s ≈ ${(RHO*10**(net[i]-21)).toPrecision(2)} g/s</span><span></span></div>`;
+      tip2.innerHTML=h;tip2.style.display="block";
+      const wr=ss.getBoundingClientRect(),px=ev.clientX-wr.left,py=ev.clientY-wr.top;
+      tip2.style.left=(px>wr.width*0.6?px-tip2.offsetWidth-14:px+14)+"px";tip2.style.top=Math.max(0,py-20)+"px";});
+    hr.addEventListener("mouseleave",()=>{tip2.style.display="none";});
+  });
+}
+function drawCake(){
+  const cs=document.getElementById("cake");if(!cs)return;cs.innerHTML="";
+  const side=10**(+document.getElementById("fp").value), A=side*side;
+  document.getElementById("fpv").textContent=(side*100).toFixed(side<0.1?1:0)+" cm × "+(side*100).toFixed(side<0.1?1:0)+" cm";
+  const mv=document.querySelector('input[name=mv]:checked').value;
+  const millV=tmass.slice(0,7).map(m=>m/100);           // m³ at 100 kg/m³
+  const sumMill=millV.reduce((a,b)=>a+b,0), k=mv==="text"?1.8e-4/sumMill:1;
+  const V=L.map((_,i)=>i<7?millV[i]*k:0.05/3);
+  const T=V.map(v=>v/A), tot=T.reduce((a,b)=>a+b,0);
+  const preT=T[0]+T[1], millT=T.slice(0,7).reduce((a,b)=>a+b,0);
+  const z=+document.getElementById("zm").value;
+  const lo=Math.log10(preT*0.6), hi=Math.log10(tot);
+  const vis=10**(hi-(hi-lo)*z);
+  const lm2=(v)=>v===0?"0":v>=1?(+v.toPrecision(3))+" m":v>=0.01?(+(v*100).toPrecision(3))+" cm":v>=1e-3?(+(v*1e3).toPrecision(3))+" mm":(+(v*1e6).toPrecision(3))+" µm";
+  document.getElementById("zmv").textContent="0 – "+lm2(vis);
+  const CW=640,CH=560,top=16,bot=CH-20,x0=130,x1=330;
+  const yv=v=>bot-(bot-top)*v/vis;
+  // ticks
+  const raw=vis/6, mag=10**Math.floor(Math.log10(raw)), st=[1,2,5,10].map(n=>n*mag).find(n=>n>=raw);
+  for(let v=0;v<=vis*1.0001;v+=st){el("line",{x1:x0-6,x2:x1,y1:yv(v),y2:yv(v),class:"gridline"},cs);
+    const t=el("text",{x:x0-10,y:yv(v)+4,"text-anchor":"end",fill:"var(--text-2)","font-size":11},cs);t.textContent=lm2(v);}
+  const cols=["var(--muted)","var(--grid)","var(--b1)","var(--b2)","var(--b3)","var(--b2)","var(--b4)","var(--o1)","var(--o2)","var(--o3)"];
+  const defs=el("defs",{},cs);const cp=el("clipPath",{id:"cclip"},defs);el("rect",{x:0,y:top,width:CW,height:bot-top},cp);
+  const g=el("g",{"clip-path":"url(#cclip)"},cs);
+  let acc=0;const labs=[];
+  T.forEach((t,i)=>{const yb=yv(acc),yt=yv(acc+t);acc+=t;
+    if(yb<top)return;
+    el("rect",{x:x0,y:Math.max(yt,top-2),width:x1-x0,height:Math.max(yb-Math.max(yt,top-2),0.6),fill:cols[i],stroke:"var(--surface)","stroke-width":0.75},g);
+    const h=yb-Math.max(yt,top);if(h>=13)labs.push([i,(Math.max(yt,top)+yb)/2]);
+  });
+  labs.forEach(([i,y])=>{const ub=tmassUB[i]&&i<7;
+    el("line",{x1:x1,x2:x1+14,y1:y,y2:y,stroke:"var(--muted)"},cs);
+    const t=el("text",{x:x1+18,y:y+4,fill:"var(--text)","font-size":12},cs);t.textContent=L[i]+"  "+(ub?"≤ ":"")+lm2(T[i]);});
+  if(acc>vis*1.0001){const t=el("text",{x:(x0+x1)/2,y:top-4,"text-anchor":"middle",fill:"var(--muted)","font-size":11},cs);t.textContent="▲ continues to "+lm2(tot);}
+  // table
+  let h=`<table><tr><th>Level</th><th>Volume [m³]</th><th>Thickness</th></tr>`;
+  for(let i=L.length-1;i>=0;i--){const ub=tmassUB[i]&&i<7;h+=`<tr><td><span class="sw" style="border-color:${cols[i]};border-top-width:10px;width:12px"></span> ${L[i]}</td><td>${ub?"≤ ":""}${fmt(+V[i].toPrecision(2))}</td><td>${ub?"≤ ":""}${lm2(T[i])}</td></tr>`;}
+  h+=`<tr><td><b>Total</b></td><td><b>${fmt(+V.reduce((a,b)=>a+b,0).toPrecision(2))}</b></td><td><b>${lm2(tot)}</b></td></tr></table>`;
+  document.getElementById("cakeTbl").innerHTML=h;
+  document.getElementById("cakeSum").innerHTML=`<b>Result.</b> All the nanoscale machinery – pre-stages and mills – is a film about <b>${lm2(millT)}</b> thick at the bottom, and the manipulator workspaces make up almost all of the height (<b>${lm2(tot-millT)}</b>, ${(100*(tot-millT)/tot).toFixed(1)} %).`;
+  cs._lim={tot,millT,preT,lo,hi};
+}
+function zoomTo(v){const c=document.getElementById("cake")._lim;if(!c)return;
+  const z=v==null?0:Math.min(1,Math.max(0,(c.hi-Math.log10(v))/(c.hi-c.lo)));document.getElementById("zm").value=z;drawCake();}
+["fp","zm"].forEach(id=>document.getElementById(id).addEventListener("input",drawCake));
+document.getElementById("cake").addEventListener("wheel",e=>{e.preventDefault();
+  const zm=document.getElementById("zm");zm.value=Math.min(1,Math.max(0,+zm.value-e.deltaY*0.0006));drawCake();},{passive:false});
+document.querySelectorAll('input[name=mv]').forEach(r=>r.addEventListener("change",drawCake));
+document.getElementById("zAll").addEventListener("click",()=>zoomTo(null));
+document.getElementById("zMill").addEventListener("click",()=>{const c=document.getElementById("cake")._lim;zoomTo(c.millT*1.15);});
+document.getElementById("zPre").addEventListener("click",()=>{const c=document.getElementById("cake")._lim;zoomTo(c.preT*1.3);});
+function drawLife(){
+  const ls=document.getElementById("life");ls.innerHTML="";
+  const mode=document.querySelector('input[name=rf]:checked').value, step=document.getElementById("stepf").checked;
+  const LW=1160,LH=428,lm={l:70,r:20,t:34,b:72},lw=LW-lm.l-lm.r,lh=LH-lm.t-lm.b;
+  // lifetime [years] for one level: Psyst = [1-(1-Pu)^Nu]^Ns = 1/e ; Pu = exp(-lam t)
+  function life(i,Nu){
+    const m=rmass[i];if(m==null)return null;
+    let p10=mode==="mass"?-Math.expm1(-1e15*5*m*1e-18):0.01; if(step&&kind[i]==="mill")p10+=0.003;
+    const lam=-Math.log1p(-p10)/10;
+    const lnq=Math.log(-Math.expm1(-1/sets[i]))/Nu;   // ln of unit failure prob at the level's 1/e point
+    return -Math.log(-Math.expm1(lnq))/lam;
+  }
+  const variants=[{n:"ups from Table 14.1",col:"var(--v2)",N:i=>units[i]},
+                  {n:"ups = 20 (text)",col:"var(--v1)",N:i=>kind[i]==="mill"?20:null},
+                  {n:"ups = 10 (text)",col:"var(--muted)",N:i=>kind[i]==="mill"?10:null}];
+  const vals=variants.map(v=>L.map((_,i)=>{const N=v.N(i);return N==null?null:life(i,N);}));
+  const all=vals.flat().filter(v=>v!=null);
+  const e0=0,e1=Math.max(3,Math.ceil(Math.log10(Math.max(...all))));
+  const ly=v=>lm.t+lh*(1-(Math.log10(Math.max(v,1))-e0)/(e1-e0));
+  const lx=i=>lm.l+lw*(i+0.5)/L.length;
+  let gx=lm.l;variants.forEach(v=>{el("rect",{x:gx,y:6,width:12,height:12,rx:3,fill:v.col},ls);
+    const t=el("text",{x:gx+17,y:16,fill:"var(--text-2)","font-size":12},ls);t.textContent=v.n;gx+=t.getComputedTextLength()+40;});
+  for(let e=e0;e<=e1;e++){el("line",{x1:lm.l,x2:LW-lm.r,y1:ly(10**e),y2:ly(10**e),class:"gridline"},ls);
+    const t=el("text",{x:lm.l-8,y:ly(10**e)+4,"text-anchor":"end",fill:"var(--text-2)","font-size":11},ls);t.textContent=e<=3?(10**e)+" yr":"10"+sup(e)+" yr";}
+  [10,100].forEach(v=>el("line",{x1:lm.l,x2:LW-lm.r,y1:ly(v),y2:ly(v),stroke:"var(--muted)","stroke-dasharray":"5 4","stroke-width":1.5},ls));
+  const slot=lw/L.length, bw=slot*0.22;
+  L.forEach((n,i)=>{
+    const present=variants.map((v,k)=>[k,vals[k][i]]).filter(([k,v])=>v!=null);
+    if(!present.length){
+      const why=i>=5?"no sensitive mass:|damage-tolerant":"";
+      why.split("|").forEach((ln,j)=>{const t=el("text",{x:lx(i),y:ly(1)-30+j*14,"text-anchor":"middle",fill:"var(--muted)","font-size":11},ls);t.textContent=ln;});
+    }
+    present.forEach(([k,v],j)=>{
+      const x0=lx(i)+(j-(present.length-1)/2)*(bw+3)-bw/2, y0=ly(v);
+      el("rect",{x:x0,y:y0,width:bw,height:Math.max(ly(1)-y0,1),rx:3,fill:variants[k].col},ls);
+      const t=el("text",{x:x0+bw/2,y:y0-5,"text-anchor":"middle",fill:"var(--text)","font-size":10.5},ls);
+      t.textContent=v>=1e4?fmt(+v.toPrecision(1)):String(Math.round(v));
+    });
+    xlab(ls,lx(i),LH-lm.b+18,i);
+  });
+}
+document.querySelectorAll('input[name=rf]').forEach(r=>r.addEventListener("change",drawLife));
+document.getElementById("stepf").addEventListener("change",drawLife);
+const RHO=1.0; // g/cm³ = 1000 kg/m³, §14.4.3
+function massFlow(P){return P.map((p,i)=>p*(i<2?preVol:pscale[i]**3)*1e-21*RHO);} // g/s
+function drawFlow(P){
+  const fs=document.getElementById("flow");fs.innerHTML="";
+  const FW=1160,FH=358,fm={l:62,r:20,t:24,b:68},fw=FW-fm.l-fm.r,fh=FH-fm.t-fm.b;
+  const fx=i=>fm.l+fw*(i+0.5)/L.length;
+  const g=massFlow(P), gm=[...g].sort((a,b)=>a-b)[Math.floor(g.length/2)]; // g/s
+  const top=Math.max(...g,1)*1.12;
+  const nice=[0.5,1,2,5,10,20,25,50,100,200,500];const stp=nice.find(n=>top/n<=6)||1000;
+  const yy=v=>fm.t+fh*(1-v/top);
+  for(let v=0;v<=top;v+=stp){el("line",{x1:fm.l,x2:FW-fm.r,y1:yy(v),y2:yy(v),class:"gridline"},fs);
+    const t=el("text",{x:fm.l-8,y:yy(v)+4,"text-anchor":"end",fill:"var(--text-2)","font-size":11},fs);t.textContent=v+" g/s";}
+  el("line",{x1:fm.l,x2:FW-fm.r,y1:yy(1),y2:yy(1),stroke:"var(--muted)","stroke-dasharray":"5 4","stroke-width":1.5},fs);
+  const bw=fw/L.length*0.56;
+  g.forEach((v,i)=>{
+    const off=v>3*gm||v<gm/3;
+    const h=Math.max(fh*v/top,0);
+    el("rect",{x:fx(i)-bw/2,y:yy(0)-h,width:bw,height:h,rx:4,fill:off?"var(--bad)":"var(--s1)"},fs);
+    const lab=el("text",{x:fx(i),y:yy(0)-h-6,"text-anchor":"middle",fill:off?"var(--bad)":"var(--text)","font-size":12,"font-weight":off?600:400},fs);
+    lab.textContent=fmt(+v.toPrecision(2));
+    xlab(fs,fx(i),FH-fm.b+16,i);
+  });
+}
+document.querySelectorAll(".viz-root > h2").forEach(h=>{
+  const d=document.createElement("details");d.className="sec";d.open=h.textContent.startsWith("Continuity-of-throughput");
+  const sm=document.createElement("summary");h.parentNode.insertBefore(d,h);sm.appendChild(h);d.appendChild(sm);
+  while(d.nextSibling&&!(d.nextSibling.nodeType===1&&d.nextSibling.tagName==="H2"))d.appendChild(d.nextSibling);
+  d.addEventListener("toggle",()=>{if(d.open)draw();});
+});
+drawTree();
+draw();
+})();
+</script>
+</body>
+</html>
