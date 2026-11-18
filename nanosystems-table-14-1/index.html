@@ -9,7 +9,11 @@
 <meta property="og:title" content="Is Nanosystems’ example productive nanosystem (Table 14.1) continuity-consistent in throughput?">
 <meta property="og:description" content="Interactive check of the example productive nanosystem in Drexler’s Nanosystems (Table 14.1): does every level pass on the ~1 g/s the level below delivers? With charts, formulas, and three oddities found.">
 <meta property="og:url" content="https://mechadense.github.io/interactive_demos/nanosystems-table-14-1/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://mechadense.github.io/interactive_demos/nanosystems-table-14-1/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Color-coded throughput formula and log stack-up chart: every level of Table 14.1 lands on 10²¹ nm³/s = 1 g/s">
+<meta name="twitter:card" content="summary_large_image">
 <title>Is Nanosystems’ example productive nanosystem (Table 14.1) continuity-consistent in throughput?</title>
 <style>
 .viz-root{
@@ -206,7 +210,7 @@ details.sec>summary h2{margin:0;display:inline}
   <p class="sub">Light boxes = table columns, darker = derived. Color family follows the chain: rate (blue), size (orange), continuity (green).</p>
   <svg id="tree" viewBox="0 0 1160 340" role="img" aria-label="Dependency tree of the derived quantities"></svg>
 
-  <h2>Supply vs. demand per level (log axis)</h2>
+  <h2>Supply vs. demand per level, plus remaining columns (log axis)</h2>
   <p class="sub">Each quantity in its own unit on one log₁₀ axis. sets, ups, f, product scale, cycles/s and volume flow are in the stack-up chart above. Hover a column for values; hollow markers = upper bound (“&lt;” in the table).</p>
   <div class="eq"><span class="lbl">Continuity</span> needed<sub>n</sub> = p<sub>n</sub> · inputs<sub>n</sub> ≟ p<sub>n−1</sub> = supplied<sub>n</sub><span class="u"><span class="fr"><span>inputs</span><span>s</span></span> = <span class="fr"><span>products</span><span>s</span></span> × <span class="fr"><span>inputs</span><span>product</span></span></span></div>
   <div class="eq"><span class="lbl">Log</span> log p<sub>n</sub> + log inputs<sub>n</sub> ≟ log p<sub>n−1</sub></div>
